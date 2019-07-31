@@ -12,14 +12,16 @@
           v-for="(answer, index) in shuffledAnswers"
           :key="index"
           @click="selectAnswer(index)"
-          :class="[selectedIndex === index ? 'selected' : '']"
+          :class="answerClass(index)"
         >
           {{ answer }}
         </b-list-group-item>
       </b-list-group>
 
       <b-button variant="primary" href="#"
-        @click="submitAnswer">
+        @click="submitAnswer"
+        :disabled="selectedIndex === null || answered"
+        >
         Submit
       </b-button>
       <b-button @click="nextQuestion" variant="success" href="#">Next Question</b-button>
@@ -41,7 +43,8 @@
       return{
         selectedIndex: null,
         correctIndex: null,
-        shuffledAnswers: []
+        shuffledAnswers: [],
+        answered: false
       }
     },
 
@@ -58,6 +61,7 @@
         immediate: true,
         handler(){
           this.selectedIndex = null
+          this.answered = false
           this.shuffleAnswers();
         }
       }
@@ -72,7 +76,7 @@
         if (this.selectedIndex === this.correctIndex){
           isCorrect = true
         }
-
+        this.answered = true
         this.increment(isCorrect)
       },
 
@@ -80,8 +84,20 @@
         let answers = [...this.currentQuestion.incorrect_answers, this.currentQuestion.correct_answer]
         this.shuffledAnswers = _.shuffle(answers)
         this.correctIndex = this.shuffledAnswers.indexOf(this.currentQuestion.correct_answer)
-        console.log(this.shuffledAnswers)
-        console.log(this.correctIndex)
+      },
+      answerClass(index){
+        let answerClass = ''
+
+        if (!this.answered && this.selectedIndex === index){
+          answerClass = 'selected'
+        }
+        else if (this.answered && this.correctIndex === index) {
+          answerClass = 'correct'
+        }
+        else if (this.answered && this.selectedIndex === index && this.correctIndex !== index) {
+          answerClass = 'incorrect'
+        }
+        return answerClass
       }
     }
   }
