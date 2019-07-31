@@ -9,7 +9,7 @@
 
       <b-list-group>
         <b-list-group-item
-          v-for="(answer, index) in answers"
+          v-for="(answer, index) in shuffledAnswers"
           :key="index"
           @click="selectAnswer(index)"
           :class="[selectedIndex === index ? 'selected' : '']"
@@ -18,7 +18,10 @@
         </b-list-group-item>
       </b-list-group>
 
-      <b-button variant="primary" href="#">Submit</b-button>
+      <b-button variant="primary" href="#"
+        @click="submitAnswer">
+        Submit
+      </b-button>
       <b-button @click="nextQuestion" variant="success" href="#">Next Question</b-button>
     </b-jumbotron>
   </div>
@@ -31,11 +34,13 @@
     props: {
       currentQuestion: Object,
       nextQuestion: Function,
+      increment: Function
     },
 
     data(){
       return{
         selectedIndex: null,
+        correctIndex: null,
         shuffledAnswers: []
       }
     },
@@ -61,9 +66,22 @@
       selectAnswer(index){
         this.selectedIndex = index
       },
+
+      submitAnswer(){
+        let isCorrect = false
+        if (this.selectedIndex === this.correctIndex){
+          isCorrect = true
+        }
+
+        this.increment(isCorrect)
+      },
+
       shuffleAnswers(){
         let answers = [...this.currentQuestion.incorrect_answers, this.currentQuestion.correct_answer]
         this.shuffledAnswers = _.shuffle(answers)
+        this.correctIndex = this.shuffledAnswers.indexOf(this.currentQuestion.correct_answer)
+        console.log(this.shuffledAnswers)
+        console.log(this.correctIndex)
       }
     }
   }
