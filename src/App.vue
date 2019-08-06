@@ -4,7 +4,11 @@
       :numCorrect="numCorrect"
       :numTotal="numTotal"
      />
+     <h1 v-if="index > questions.length"
 
+     >
+      You have completed the quiz. You scored {{numCorrect}}/{{numTotal}}
+    </h1>
     <b-container class="bv-example-row">
       <b-row>
         <b-col sm="6" offset="3">
